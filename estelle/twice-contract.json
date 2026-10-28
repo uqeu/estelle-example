@@ -1,0 +1,122 @@
+{
+  "target": {
+    "name": "Tabby (uqeu/estelle-example)",
+    "base_url": "https://uqeu.github.io/estelle-example/",
+    "environment": "production-readonly"
+  },
+  "allowed_origins": [
+    "https://uqeu.github.io"
+  ],
+  "goals": "Check that the bill splitter adds the tip, divides the total and refuses a bad amount.",
+  "journeys": [
+    {
+      "id": "default-split",
+      "title": "the page loads and splits the default bill",
+      "role": "anonymous",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://uqeu.github.io/estelle-example/"
+        }
+      ],
+      "assertions": [
+        {
+          "id": "served",
+          "kind": "document_ok",
+          "provenance": "prior-behavior",
+          "source": "GitHub Pages serves the page"
+        },
+        {
+          "id": "total",
+          "kind": "text_present",
+          "provenance": "requirement",
+          "source": "100.00 + 18% tip",
+          "text": "$118.00"
+        },
+        {
+          "id": "tip",
+          "kind": "text_present",
+          "provenance": "requirement",
+          "source": "18% of 100.00",
+          "text": "$18.00"
+        },
+        {
+          "id": "quiet",
+          "kind": "no_console_errors",
+          "provenance": "hypothesis",
+          "source": "a working page logs no errors"
+        },
+        {
+          "id": "a11y",
+          "kind": "a11y_clean",
+          "provenance": "hypothesis",
+          "source": "form fields are labelled"
+        }
+      ]
+    },
+    {
+      "id": "four-people",
+      "title": "four people split 100.00 with an 18% tip",
+      "role": "anonymous",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://uqeu.github.io/estelle-example/"
+        },
+        {
+          "action": "fill",
+          "selector": "input[name=people]",
+          "value": "4"
+        },
+        {
+          "action": "click",
+          "selector": "button[type=submit]"
+        }
+      ],
+      "assertions": [
+        {
+          "id": "each",
+          "kind": "text_present",
+          "provenance": "requirement",
+          "source": "118.00 / 4",
+          "text": "$29.50"
+        }
+      ]
+    },
+    {
+      "id": "bad-amount",
+      "title": "a bill that is not an amount is refused",
+      "role": "anonymous",
+      "steps": [
+        {
+          "action": "goto",
+          "url": "https://uqeu.github.io/estelle-example/"
+        },
+        {
+          "action": "fill",
+          "selector": "input[name=subtotal]",
+          "value": "abc"
+        },
+        {
+          "action": "click",
+          "selector": "button[type=submit]"
+        }
+      ],
+      "assertions": [
+        {
+          "id": "refused",
+          "kind": "text_present",
+          "provenance": "requirement",
+          "source": "src/split.js parseAmount",
+          "text": "not an amount"
+        }
+      ]
+    }
+  ],
+  "limits": {
+    "max_minutes": 10,
+    "max_credits": 2000,
+    "max_actions": 60,
+    "max_retries": 1
+  }
+}
