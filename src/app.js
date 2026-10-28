@@ -10,11 +10,12 @@ function render() {
     const subtotal = parseAmount(form.subtotal.value);
     const tip = Number(form.tip.value);
     const people = Number(form.people.value);
-    const { tipCents, totalCents, perPersonCents } = splitBill(subtotal, tip, people);
+    const { tipCents, totalCents, shares } = splitBill(subtotal, tip, people);
     result.querySelector("[data-tip]").textContent = formatCents(tipCents);
     result.querySelector("[data-total]").textContent = formatCents(totalCents);
-    result.querySelector("[data-each]").textContent =
-      `about ${formatCents(Math.round(perPersonCents))}`;
+    result.querySelector("[data-each]").textContent = formatCents(shares[0]);
+    result.querySelector("[data-collected]").textContent =
+      formatCents(shares.reduce((sum, cents) => sum + cents, 0));
     result.hidden = false;
   } catch (err) {
     result.hidden = true;
