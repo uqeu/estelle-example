@@ -35,5 +35,12 @@ export function splitBill(subtotalCents, tipPercent, people) {
   }
   const tipCents = Math.round((subtotalCents * tipPercent) / 100);
   const totalCents = subtotalCents + tipCents;
-  return { tipCents, totalCents, perPersonCents: totalCents / people };
+  return { tipCents, totalCents, shares: shareOut(totalCents, people) };
+}
+
+// One whole-cent amount per person, so everyone can pay exactly what the
+// app shows and the shares add back up to the total.
+export function shareOut(totalCents, people) {
+  const share = Math.round(totalCents / people);
+  return Array.from({ length: people }, () => share);
 }
