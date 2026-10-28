@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tabby: split the bill</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <h1>Tabby</h1>
+    <p class="lede">Split a restaurant bill, tip included.</p>
+
+    <form id="bill">
+      <label>Bill before tip ($)
+        <input name="subtotal" inputmode="decimal" value="100.00" autocomplete="off">
+      </label>
+      <label>Tip (%)
+        <input name="tip" type="number" min="0" max="100" step="1" value="18">
+      </label>
+      <label>People
+        <input name="people" type="number" min="1" max="50" step="1" value="3">
+      </label>
+      <button type="submit">Split</button>
+    </form>
+
+    <p id="error" role="alert"></p>
+
+    <dl id="result" hidden>
+      <dt>Tip</dt><dd data-tip></dd>
+      <dt>Total</dt><dd data-total></dd>
+      <dt>Each person</dt><dd data-each></dd>
+    </dl>
+  </main>
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
