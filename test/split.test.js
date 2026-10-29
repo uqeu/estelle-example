@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseAmount, formatCents, splitBill } from "../src/split.js";
+import { parseAmount, formatCents, splitBill, shareOf } from "../src/split.js";
 
 test("parseAmount reads dollars into cents", () => {
   assert.equal(parseAmount("12"), 1200);
@@ -32,4 +32,12 @@ test("splitBill validates its inputs", () => {
   assert.throws(() => splitBill(1000, 150, 2), /tip/);
   assert.throws(() => splitBill(1000, 10, 0), /people/);
   assert.throws(() => splitBill(1000, 10, 2.5), /people/);
+});
+
+test("shareOf gives the extra cent to the first `remainder` people", () => {
+  assert.equal(shareOf(1000, 3, 0), 334);
+  assert.equal(shareOf(1000, 3, 1), 333);
+  assert.equal(shareOf(1000, 3, 2), 333);
+  const shares = [0, 1, 2].map((i) => shareOf(1000, 3, i));
+  assert.equal(shares.reduce((a, b) => a + b, 0), 1000);
 });

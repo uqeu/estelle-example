@@ -46,5 +46,5 @@ export function shareOf(totalCents, people, index) {
   }
   const base = Math.floor(totalCents / people);
   const remainder = totalCents % people;
-  return index <= remainder ? base + 1 : base;
+  return index < remainder ? base + 1 : base;
 }
