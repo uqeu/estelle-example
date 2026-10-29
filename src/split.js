@@ -33,8 +33,8 @@ export function splitBill(subtotalCents, tipPercent, people) {
   if (!Number.isInteger(people) || people < 1 || people > MAX_PEOPLE) {
     throw new Error(`people must be between 1 and ${MAX_PEOPLE}`);
   }
-  // Keep the exact tip and round once, at the total, so the bill is not rounded twice.
-  const tipCents = (subtotalCents * tipPercent) / 100;
-  const totalCents = Math.round(subtotalCents + tipCents);
+  // The tip is money, so it is whole cents too; the total is then exact.
+  const tipCents = Math.round((subtotalCents * tipPercent) / 100);
+  const totalCents = subtotalCents + tipCents;
   return { tipCents, totalCents, perPersonCents: totalCents / people };
 }
