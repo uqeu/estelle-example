@@ -37,3 +37,14 @@ export function splitBill(subtotalCents, tipPercent, people) {
   const totalCents = subtotalCents + tipCents;
   return { tipCents, totalCents, perPersonCents: totalCents / people };
 }
+
+// Whole-cent shares that add back up to the total: the first `remainder`
+// people pay one extra cent. `index` is 0-based.
+export function shareOf(totalCents, people, index) {
+  if (!Number.isInteger(index) || index < 0 || index >= people) {
+    throw new Error(`index must be between 0 and ${people - 1}`);
+  }
+  const base = Math.floor(totalCents / people);
+  const remainder = totalCents % people;
+  return index <= remainder ? base + 1 : base;
+}
