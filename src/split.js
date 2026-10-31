@@ -38,7 +38,11 @@ export function splitBill(subtotalCents, tipPercent, people) {
   if (!Number.isInteger(people) || people < 1 || people > MAX_PEOPLE) {
     throw new Error(`people must be between 1 and ${MAX_PEOPLE}`);
   }
-  const tipCents = Math.round((subtotalCents * tipPercent) / 100);
+  // Round half up on exact integers. subtotalCents * tipPercent can exceed
+  // 2^53 (a safe subtotal times a tip of 11 is already 4.95e16), so the
+  // product is formed in BigInt: dividing in floating point first can lose
+  // the half-cent and round a cent the wrong way.
+  const tipCents = Number((BigInt(subtotalCents) * BigInt(tipPercent) + 50n) / 100n);
   const totalCents = subtotalCents + tipCents;
   if (!Number.isSafeInteger(totalCents)) {
     throw new Error("total is not a safe integer of cents");
