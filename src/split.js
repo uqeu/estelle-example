@@ -5,14 +5,19 @@ const MAX_PEOPLE = 50;
 const MAX_TIP_PERCENT = 100;
 
 // "12.5" -> 1250, "12.34" -> 1234. Throws on anything that is not a
-// plain non-negative amount with at most two decimals.
+// plain non-negative amount with at most two decimals, and on amounts
+// whose cents cannot be held exactly as a safe integer.
 export function parseAmount(text) {
   const trimmed = String(text).trim();
   if (!/^\d+(\.\d{1,2})?$/.test(trimmed)) {
     throw new Error(`not an amount: "${text}"`);
   }
   const [whole, fraction = ""] = trimmed.split(".");
-  return Number(whole) * 100 + Number(fraction.padEnd(2, "0"));
+  const cents = Number(whole) * 100 + Number(fraction.padEnd(2, "0"));
+  if (!Number.isSafeInteger(cents)) {
+    throw new Error(`amount is not a safe integer of cents: "${text}"`);
+  }
+  return cents;
 }
 
 export function formatCents(cents) {
@@ -24,7 +29,7 @@ export function formatCents(cents) {
 }
 
 export function splitBill(subtotalCents, tipPercent, people) {
-  if (!Number.isInteger(subtotalCents) || subtotalCents < 0) {
+  if (!Number.isSafeInteger(subtotalCents) || subtotalCents < 0) {
     throw new Error("subtotal must be a whole number of cents");
   }
   if (!(tipPercent >= 0 && tipPercent <= MAX_TIP_PERCENT)) {
@@ -35,5 +40,8 @@ export function splitBill(subtotalCents, tipPercent, people) {
   }
   const tipCents = Math.round((subtotalCents * tipPercent) / 100);
   const totalCents = subtotalCents + tipCents;
+  if (!Number.isSafeInteger(totalCents)) {
+    throw new Error("total is not a safe integer of cents");
+  }
   return { tipCents, totalCents, perPersonCents: totalCents / people };
 }
