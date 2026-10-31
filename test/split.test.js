@@ -33,3 +33,16 @@ test("splitBill validates its inputs", () => {
   assert.throws(() => splitBill(1000, 10, 0), /people/);
   assert.throws(() => splitBill(1000, 10, 2.5), /people/);
 });
+
+test("parseAmount refuses an amount whose cents are not a safe integer", () => {
+  // A 17-digit dollar amount times 100 overflows 2^53: the cents lose
+  // precision, so the displayed amount would not be the one supplied.
+  for (const bad of ["99999999999999999", "90071992547409.92", "1" + "0".repeat(17)]) {
+    assert.throws(() => parseAmount(bad), /safe integer/);
+  }
+});
+
+test("splitBill refuses a subtotal that is not a safe integer", () => {
+  assert.throws(() => splitBill(2 ** 53, 10, 2), /subtotal/);
+  assert.throws(() => splitBill(2 ** 53 + 2, 10, 2), /subtotal/);
+});
