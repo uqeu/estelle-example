@@ -11,5 +11,6 @@ input { font: inherit; padding: .5rem .6rem; border: 1px solid var(--line); bord
 button { font: inherit; padding: .55rem; border: 0; border-radius: 6px; background: var(--accent); color: #fff; cursor: pointer; }
 #error { color: #b3261e; min-height: 1.5em; }
 dl { display: grid; grid-template-columns: auto 1fr; gap: .4rem 1rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+dl[hidden] { display: none; }
 dt { color: var(--muted); }
 dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }

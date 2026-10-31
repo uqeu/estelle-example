@@ -46,3 +46,8 @@ test("splitBill refuses a subtotal that is not a safe integer", () => {
   assert.throws(() => splitBill(2 ** 53, 10, 2), /subtotal/);
   assert.throws(() => splitBill(2 ** 53 + 2, 10, 2), /subtotal/);
 });
+
+test("splitBill refuses a total that overflows a safe subtotal", () => {
+  assert.equal(splitBill(Number.MAX_SAFE_INTEGER, 0, 1).totalCents, Number.MAX_SAFE_INTEGER);
+  assert.throws(() => splitBill(Number.MAX_SAFE_INTEGER, 1, 1), /total/);
+});
