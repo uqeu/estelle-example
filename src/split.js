@@ -28,6 +28,16 @@ export function formatCents(cents) {
   return `${sign}$${dollars}.${rest}`;
 }
 
+// "18" -> 1800, "18.5" -> 1850. Percentages are held in hundredths of a
+// percent so a fractional rate is an exact integer too.
+function percentInHundredths(tipPercent) {
+  const hundredths = Math.round(tipPercent * 100);
+  if (!(hundredths >= 0) || Math.abs(tipPercent * 100 - hundredths) > 1e-6) {
+    throw new Error("tip must have at most two decimal places");
+  }
+  return hundredths;
+}
+
 export function splitBill(subtotalCents, tipPercent, people) {
   if (!Number.isSafeInteger(subtotalCents) || subtotalCents < 0) {
     throw new Error("subtotal must be a whole number of cents");
@@ -38,7 +48,9 @@ export function splitBill(subtotalCents, tipPercent, people) {
   if (!Number.isInteger(people) || people < 1 || people > MAX_PEOPLE) {
     throw new Error(`people must be between 1 and ${MAX_PEOPLE}`);
   }
-  const tipCents = Math.round((subtotalCents * tipPercent) / 100);
+  const tipNumerator = percentInHundredths(tipPercent);
+  const tipScaled = BigInt(subtotalCents) * BigInt(tipNumerator);
+  const tipCents = Number((tipScaled + 5000n) / 10000n);
   const totalCents = subtotalCents + tipCents;
   if (!Number.isSafeInteger(totalCents)) {
     throw new Error("total is not a safe integer of cents");
