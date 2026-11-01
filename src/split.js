@@ -28,6 +28,19 @@ export function formatCents(cents) {
   return `${sign}$${dollars}.${rest}`;
 }
 
+// subtotalCents * percent / 100, rounded half-up to a whole cent, computed
+// in exact integer arithmetic. Doing this as (subtotalCents * percent) / 100
+// in a double loses the fractional cent once the product passes 2^53, so a
+// large but safe subtotal can round the tip a cent the wrong way.
+function percentOfHalfUp(subtotalCents, percent) {
+  const product = BigInt(subtotalCents) * BigInt(percent);
+  const tip = (product + 50n) / 100n;
+  if (tip > BigInt(Number.MAX_SAFE_INTEGER)) {
+    throw new Error("tip is not a safe integer of cents");
+  }
+  return Number(tip);
+}
+
 export function splitBill(subtotalCents, tipPercent, people) {
   if (!Number.isSafeInteger(subtotalCents) || subtotalCents < 0) {
     throw new Error("subtotal must be a whole number of cents");
@@ -38,7 +51,7 @@ export function splitBill(subtotalCents, tipPercent, people) {
   if (!Number.isInteger(people) || people < 1 || people > MAX_PEOPLE) {
     throw new Error(`people must be between 1 and ${MAX_PEOPLE}`);
   }
-  const tipCents = Math.round((subtotalCents * tipPercent) / 100);
+  const tipCents = percentOfHalfUp(subtotalCents, tipPercent);
   const totalCents = subtotalCents + tipCents;
   if (!Number.isSafeInteger(totalCents)) {
     throw new Error("total is not a safe integer of cents");

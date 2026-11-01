@@ -51,3 +51,24 @@ test("splitBill refuses a total that overflows a safe subtotal", () => {
   assert.equal(splitBill(Number.MAX_SAFE_INTEGER, 0, 1).totalCents, Number.MAX_SAFE_INTEGER);
   assert.throws(() => splitBill(Number.MAX_SAFE_INTEGER, 1, 1), /total/);
 });
+
+test("splitBill keeps exact whole-cent tip rounding on a large safe subtotal", () => {
+  // $45035996273704.95 entered on the page is 4503599627370495 cents.
+  // 11% of it is 495395959010754.45 cents, so half-up gives ...754. Computing
+  // subtotal * 11 / 100 as a double loses the fraction and rounds up to
+  // ...755: a cent of tip too much, and a total that is a cent too high.
+  const subtotal = parseAmount("45035996273704.95");
+  const out = splitBill(subtotal, 11, 1);
+  assert.equal(out.tipCents, 495395959010754);
+  assert.equal(out.totalCents, 4998995586381249);
+  assert.equal(formatCents(out.tipCents), "$4953959590107.54");
+  assert.equal(formatCents(out.totalCents), "$49989955863812.49");
+});
+
+test("splitBill rounds a tip of a half cent up", () => {
+  // 5% of 10 cents is 0.5 cents, which half-up takes to 1 cent.
+  assert.equal(splitBill(10, 5, 1).tipCents, 1);
+  // 70% of 4503599627370495 cents is exactly ...146.5, half-up to ...147.
+  assert.equal(splitBill(4503599627370495, 70, 1).tipCents, 3152519739159347);
+  assert.equal(splitBill(4503599627370495, 30, 1).tipCents, 1351079888211149);
+});
