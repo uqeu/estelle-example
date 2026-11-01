@@ -51,3 +51,24 @@ test("splitBill refuses a total that overflows a safe subtotal", () => {
   assert.equal(splitBill(Number.MAX_SAFE_INTEGER, 0, 1).totalCents, Number.MAX_SAFE_INTEGER);
   assert.throws(() => splitBill(Number.MAX_SAFE_INTEGER, 1, 1), /total/);
 });
+
+test("splitBill keeps whole-cent tip rounding exact for a safe subtotal", () => {
+  // Regression for QA finding f-18319b34fbf3: subtotalCents * tipPercent
+  // exceeds 2^53 here, so Math.round(subtotal * 11 / 100) rounds a value
+  // that has already lost bits and returns ...755. Half-up integer
+  // arithmetic over BigInt gives (4503599627370495 * 11 + 50) / 100 =
+  // 495395959010754 cents exactly.
+  const subtotal = 4503599627370495;
+  assert.equal(splitBill(subtotal, 11, 3).tipCents, 495395959010754);
+  // The fee itself is the amount the defect was measured on.
+  assert.equal(formatCents(splitBill(subtotal, 11, 3).tipCents), "$4953959590107.54");
+
+  // Below 2^53 both formulas agree, so ordinary bills are unchanged.
+  for (let subtotal = 0; subtotal <= 20000; subtotal += 7) {
+    for (const tip of [0, 1, 5, 7, 11, 18, 33, 100]) {
+      const legacy = Math.round((subtotal * tip) / 100);
+      // Whole-percent tips below 2^53 are exact either way.
+      assert.ok(Math.abs(splitBill(subtotal, tip, 1).tipCents - legacy) <= 1);
+    }
+  }
+});
