@@ -66,9 +66,8 @@ test("splitBill keeps whole-cent tip rounding exact for a safe subtotal", () => 
   // Below 2^53 both formulas agree, so ordinary bills are unchanged.
   for (let subtotal = 0; subtotal <= 20000; subtotal += 7) {
     for (const tip of [0, 1, 5, 7, 11, 18, 33, 100]) {
-      const legacy = Math.round((subtotal * tip) / 100);
-      // Whole-percent tips below 2^53 are exact either way.
-      assert.ok(Math.abs(splitBill(subtotal, tip, 1).tipCents - legacy) <= 1);
+      // Below 2^53 both formulas are exact, so they must agree to the cent.
+      assert.equal(splitBill(subtotal, tip, 1).tipCents, Math.round((subtotal * tip) / 100));
     }
   }
 });
