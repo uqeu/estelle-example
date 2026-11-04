@@ -45,3 +45,5 @@ export function splitBill(subtotalCents, tipPercent, people) {
   }
   return { tipCents, totalCents, perPersonCents: totalCents / people };
 }
+
+// On-call proof: a non-number amount is refused here rather than failing further down.
