@@ -1,8 +1,11 @@
 import { parseAmount, formatCents, splitBill } from "./split.js";
+import { initTheme } from "./theme.js";
 
 const form = document.querySelector("#bill");
 const result = document.querySelector("#result");
 const error = document.querySelector("#error");
+
+initTheme({ document, storage: window.localStorage, matchMedia: window.matchMedia.bind(window) });
 
 function render() {
   error.textContent = "";
