@@ -5,9 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Tabby: split the bill</title>
   <link rel="stylesheet" href="style.css">
+  <script>
+    // Resolve a saved Light/Dark choice before first paint; anything else
+    // (system, or an unreadable store) leaves the media query in charge.
+    try {
+      var mode = localStorage.getItem("tabby-theme");
+      if (mode === "light" || mode === "dark") {
+        document.documentElement.setAttribute("data-theme", mode);
+      }
+    } catch (e) {}
+  </script>
 </head>
 <body>
   <main>
+    <label class="theme">Theme
+      <select id="theme">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="system" selected>Follow system</option>
+      </select>
+    </label>
     <h1>Tabby</h1>
     <p class="lede">Split a restaurant bill, tip included.</p>
 

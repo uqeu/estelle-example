@@ -18,7 +18,9 @@ No dependencies. The page is plain HTML and a JavaScript module; the tests use N
 | `index.html`, `style.css` | The page |
 | `src/split.js` | The arithmetic: parsing amounts, adding the tip, dividing the total. Money is kept in cents |
 | `src/app.js` | Reads the form and writes the result |
+| `src/theme.js` | The three theme modes: Light, Dark, Follow system. The choice is stored in `localStorage` under `tabby-theme`; Follow system stores nothing and leaves the OS preference in charge |
 | `test/split.test.js` | Tests for `src/split.js` |
+| `test/theme.test.js` | Tests for `src/theme.js` |
 | `serve.js` | A static file server for running it locally |
 
 ## What Estelle did here
