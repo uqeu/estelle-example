@@ -13,6 +13,16 @@ npm test
 
 No dependencies. The page is plain HTML and a JavaScript module; the tests use Node's built-in runner.
 
+## Running locally
+
+```sh
+npm start
+```
+
+This runs `node serve.js`, a small static file server, and prints `http://localhost:3000`. Open that
+address in a browser. To use another port, set `PORT`, for example `PORT=8080 npm start`. There is
+nothing to install first. Run the tests with `npm test`.
+
 | Path | What it is |
 |---|---|
 | `index.html`, `style.css` | The page |
