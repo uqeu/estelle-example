@@ -13,13 +13,20 @@ npm test
 
 No dependencies. The page is plain HTML and a JavaScript module; the tests use Node's built-in runner.
 
-| Path | What it is |
+## Project layout
+
+| Path | What it does |
 |---|---|
-| `index.html`, `style.css` | The page |
+| `index.html`, `style.css` | The page: the bill form and the result, and its styling |
 | `src/split.js` | The arithmetic: parsing amounts, adding the tip, dividing the total. Money is kept in cents |
-| `src/app.js` | Reads the form and writes the result |
-| `test/split.test.js` | Tests for `src/split.js` |
-| `serve.js` | A static file server for running it locally |
+| `src/app.js` | Reads the form, calls `src/split.js` and writes the result or the error message |
+| `test/split.test.js` | Tests for `src/split.js`, run with `npm test` |
+| `serve.js` | A small static file server for running the page locally (`npm start`, port 3000 or `$PORT`) |
+| `package.json` | Marks the project as ES modules and defines the `start` and `test` scripts; there are no dependencies |
+| `.estelle/ci.yml` | Estelle CI config: runs `npm test` on every push and pull request |
+| `estelle/twice-contract.json`, `estelle/twice-run.md` | The Twice (Estelle QA) test plan and its exported report |
+| `LICENSE` | MIT license |
+| `.gitignore` | Ignores `node_modules/` and `.DS_Store` |
 
 ## What Estelle did here
 
